@@ -236,6 +236,8 @@ def build_scope_prompt(
     """
     Build SCOPE-RL-data-v3 format prompt.
     
+    This format matches the training data of Cooolder/SCOPE-CoT-RL-v3 model.
+    
     Args:
         target_question: The question to predict performance for
         target_model: The target model name (OpenRouter ID format)
@@ -270,15 +272,14 @@ Performance: {{len: {token_count}, correct: {correct_str}}}
 
 """
     
-    # Build the full prompt
+    # Build the full prompt - matches SCOPE-RL-data-v3 format exactly
     prompt = f"""### Task
 You are a performance prediction expert. Given a target question, {NUM_ANCHOR_EXAMPLES} anchor questions with their performance results, and a target AI model, predict how the model will perform on the target question, specifically the output length and correctness after related reasoning analysis.
 
 ### Target Model
 {target_model}
 
-{examples_text}
-### Target Question
+{examples_text}### Target Question
 {target_question}
 
 ### Output Format (STRICT)
