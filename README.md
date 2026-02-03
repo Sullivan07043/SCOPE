@@ -2,7 +2,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2601.22323-b31b1b.svg)](https://arxiv.org/abs/2601.22323)
 [![HuggingFace](https://img.shields.io/badge/🤗-Models%20%26%20Datasets-yellow)](https://huggingface.co/Cooolder)
-[![GitHub](https://img.shields.io/github/license/Sullivan07043/SCOPE)](https://github.com/Sullivan07043/SCOPE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 SCOPE is an intelligent LLM routing framework that predicts how accurate and how expensive each model will be before running it, allowing users to control cost-accuracy trade-offs and naturally handle new models.
 
