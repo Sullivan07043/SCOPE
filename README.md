@@ -1,8 +1,8 @@
-# SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning
+# Models Under SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning
 
 [![arXiv](https://img.shields.io/badge/arXiv-2601.22323-b31b1b.svg)](https://arxiv.org/abs/2601.22323)
 [![HuggingFace](https://img.shields.io/badge/🤗-Models%20%26%20Datasets-yellow)](https://huggingface.co/Cooolder)
-[![GitHub](https://img.shields.io/github/license/Sullivan07043/SCOPE-Router)](https://github.com/Sullivan07043/SCOPE-Router)
+[![GitHub](https://img.shields.io/github/license/Sullivan07043/SCOPE)](https://github.com/Sullivan07043/SCOPE)
 
 SCOPE is an intelligent LLM routing framework that predicts how accurate and how expensive each model will be before running it, allowing users to control cost-accuracy trade-offs and naturally handle new models.
 
@@ -33,8 +33,8 @@ The framework uses a two-stage routing approach:
 
 ```bash
 # Clone the repository
-git clone https://github.com/Sullivan07043/SCOPE-Router.git
-cd SCOPE-Router
+git clone https://github.com/Sullivan07043/SCOPE.git
+cd SCOPE
 
 # Install dependencies
 pip install -r requirements.txt
@@ -263,7 +263,7 @@ tngtech/deepseek-r1t2-chimera
 ## Project Structure
 
 ```
-SCOPE-Router/
+SCOPE/
 ├── config/
 │   ├── __init__.py
 │   └── model_pools.py          # Model pool definitions and pricing
