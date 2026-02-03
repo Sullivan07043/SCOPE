@@ -345,7 +345,7 @@ Paper: [https://arxiv.org/abs/2601.22323](https://arxiv.org/abs/2601.22323)
 
 ## License
 
-[MIT License](LICENSE)
+This project is licensed under the [MIT License](LICENSE).
 
 ## Contributing
 
