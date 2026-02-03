@@ -1,0 +1,32 @@
+[
+    {
+        "id": "sample_001",
+        "prompt": "What is the derivative of f(x) = x^3 + 2x^2 - 5x + 1?",
+        "gt": "3x^2 + 4x - 5",
+        "category": "mathematics"
+    },
+    {
+        "id": "sample_002",
+        "prompt": "In Python, what is the difference between a list and a tuple?",
+        "gt": "Lists are mutable while tuples are immutable",
+        "category": "programming"
+    },
+    {
+        "id": "sample_003",
+        "prompt": "A train travels from city A to city B at 60 km/h and returns at 40 km/h. What is the average speed for the entire journey?",
+        "gt": "48",
+        "category": "mathematics"
+    },
+    {
+        "id": "sample_004",
+        "prompt": "What is the capital of Australia?",
+        "gt": "Canberra",
+        "category": "geography"
+    },
+    {
+        "id": "sample_005",
+        "prompt": "Explain the concept of recursion in computer science.",
+        "gt": "Recursion is a programming technique where a function calls itself to solve a problem by breaking it into smaller subproblems",
+        "category": "programming"
+    }
+]

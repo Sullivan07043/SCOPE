@@ -1,0 +1,20 @@
+[
+  {
+    "id": "custom_001",
+    "prompt": "What is the capital of France?\n\nA. London\nB. Berlin\nC. Paris\nD. Madrid\nE. Rome",
+    "gt": "C",
+    "category": "geography"
+  },
+  {
+    "id": "custom_002",
+    "prompt": "Which programming language was created by Guido van Rossum?\n\nA. Java\nB. C++\nC. Python\nD. Ruby\nE. JavaScript",
+    "gt": "C",
+    "category": "programming"
+  },
+  {
+    "id": "custom_003",
+    "prompt": "What is the derivative of x^2?\n\nA. x\nB. 2x\nC. x^2\nD. 2x^2\nE. 1/2 x^2",
+    "gt": "B",
+    "category": "math"
+  }
+]

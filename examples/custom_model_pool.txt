@@ -1,0 +1,15 @@
+# Custom Model Pool Example
+# One OpenRouter model ID per line
+# Lines starting with # are comments
+# 
+# Find model IDs at: https://openrouter.ai/models
+
+# Example: A budget-friendly pool
+google/gemma-3-27b-it
+meta-llama/llama-3.3-70b-instruct
+qwen/qwen3-14b
+
+# Example: A high-performance pool (uncomment to use)
+# tngtech/deepseek-r1t2-chimera
+# amazon/nova-2-lite-v1
+# qwen/qwen3-235b-a22b
