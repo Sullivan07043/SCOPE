@@ -271,22 +271,80 @@ python two_stage_routing.py \
 | `--cost_sensitivity` | Cost sensitivity parameter | 2.0 |
 | `--stage1_weight` | Weight for Stage I vs Stage II | 0.3 |
 
-### 3. Custom Model Pool (`inference_anchor.py`)
+## Advanced Usage: Custom Model Pool
 
-When using a custom model pool, first run inference on the anchor set.
+If you want to use your own set of models (not in our predefined pools), follow these steps:
+
+### Step 1: Create Model Pool File
+
+Create a text file with one OpenRouter model ID per line:
+
+```
+# my_models.txt
+# Lines starting with # are comments
+google/gemma-3-27b-it
+meta-llama/llama-3.3-70b-instruct
+anthropic/claude-3-haiku
+openai/gpt-4o-mini
+```
+
+### Step 2: Add Pricing for Custom Models
+
+Edit `config/pricing.json` to add pricing for your models:
+
+```json
+{
+    "google/gemma-3-27b-it": {"input": 0.04, "output": 0.15},
+    "meta-llama/llama-3.3-70b-instruct": {"input": 0.1, "output": 0.32},
+    "anthropic/claude-3-haiku": {"input": 0.25, "output": 1.25},
+    "openai/gpt-4o-mini": {"input": 0.15, "output": 0.60}
+}
+```
+
+- **input**: Cost per 1M input tokens (USD)
+- **output**: Cost per 1M output tokens (USD)
+
+You can find pricing at [OpenRouter Pricing](https://openrouter.ai/docs#models).
+
+### Step 3: Run Anchor Inference
+
+Before using custom models for routing, you need to run inference on the anchor set to get historical performance data:
 
 ```bash
 # Set your OpenRouter API key
 export OPENROUTER_API_KEY=your_api_key_here
 
-# Run anchor inference
+# Run anchor inference (this calls the models via OpenRouter API)
 python inference_anchor.py \
-    --model_pool ../examples/custom_model_pool.txt \
-    --output data/anchor_results/ \
+    --model_pool my_models.txt \
+    --output data/my_anchor_results/ \
     --dataset id
 ```
 
-**Arguments:**
+**Note:** This step requires API calls and will incur costs. The anchor set has 250 questions.
+
+### Step 4: Run SCOPE Inference with Custom Pool
+
+```bash
+python scope_inference.py \
+    --dataset id \
+    --model_pool my_models.txt \
+    --anchor_dir data/my_anchor_results/ \
+    --output results/selection.json \
+    --similarity_output results/similarity.json
+```
+
+### Step 5: Run Routing with Custom Pricing
+
+```bash
+python two_stage_routing.py \
+    --selection results/selection.json \
+    --similarity results/similarity.json \
+    --pricing_file config/pricing.json \
+    --budget 10.0
+```
+
+**Arguments for `inference_anchor.py`:**
 | Argument | Description | Default |
 |----------|-------------|---------|
 | `--model_pool` | Custom model pool file | Required |
@@ -294,6 +352,69 @@ python inference_anchor.py \
 | `--dataset` | Dataset type | `id` |
 | `--api_key` | OpenRouter API key (or use env var) | None |
 | `--limit` | Limit anchors for testing | None |
+
+---
+
+## Advanced Usage: Custom Query Set
+
+You can route your own questions instead of using the default test set.
+
+### Step 1: Create Query File
+
+Create a JSON file with your questions:
+
+```json
+[
+  {
+    "id": "my_q001",
+    "prompt": "What is the capital of France?\n\nA. London\nB. Paris\nC. Berlin\nD. Madrid",
+    "gt": "B",
+    "category": "geography"
+  },
+  {
+    "id": "my_q002",
+    "prompt": "Solve for x: 2x + 5 = 13\n\nA. x = 3\nB. x = 4\nC. x = 5\nD. x = 6",
+    "gt": "B",
+    "category": "math"
+  },
+  {
+    "id": "my_q003",
+    "prompt": "Which programming language is known for its use in data science?\n\nA. Java\nB. Python\nC. C++\nD. Ruby",
+    "gt": "B",
+    "category": "programming"
+  }
+]
+```
+
+**Required fields:**
+- `id`: Unique question identifier
+- `prompt`: The question text (can include answer choices)
+
+**Optional fields:**
+- `gt`: Ground truth answer (for evaluation)
+- `category`: Question category
+
+### Step 2: Run SCOPE Inference
+
+```bash
+python scope_inference.py \
+    --query_file my_queries.json \
+    --output results/selection.json \
+    --similarity_output results/similarity.json
+```
+
+### Step 3: Run Routing
+
+```bash
+python two_stage_routing.py \
+    --selection results/selection.json \
+    --similarity results/similarity.json \
+    --budget 5.0
+```
+
+**Note:** When using custom queries without ground truth (`gt`), routing will work but accuracy evaluation will not be available.
+
+---
 
 ## File Formats
 
