@@ -54,6 +54,9 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config.model_pools import (
     DEFAULT_POOL,
+    FULL_POOL,
+    AVAILABLE_POOLS,
+    get_pool,
     PRICING,
     OPENROUTER_ID_TO_MODEL_NAME,
     MODEL_NAME_TO_OPENROUTER_ID,
@@ -611,7 +614,14 @@ def main():
         "--model_pool", "-m",
         type=str,
         default=None,
-        help="Custom model pool file (txt). If not provided, uses DEFAULT_POOL."
+        help="Custom model pool file (txt). Overrides --pool_name."
+    )
+    parser.add_argument(
+        "--pool_name", "-p",
+        type=str,
+        default="default",
+        choices=["default", "full", "reasoning", "high_budget", "low_budget"],
+        help="Predefined model pool name: default (7 models), full (13 models), reasoning, high_budget, low_budget"
     )
     parser.add_argument(
         "--anchor_dir",
@@ -708,9 +718,10 @@ def main():
     
     # Determine model pool
     if args.model_pool:
+        # Custom model pool from file (highest priority)
         model_pool_ids = list(load_custom_pool(args.model_pool))
         model_pool = [normalize_model_name(m) for m in model_pool_ids]
-        print(f"Model pool: Custom ({len(model_pool)} models)")
+        print(f"Model pool: Custom from {args.model_pool} ({len(model_pool)} models)")
         
         # Check anchor_dir is provided for custom pool
         if not args.anchor_dir:
@@ -718,9 +729,11 @@ def main():
             print("   Run inference_anchor.py first to generate anchor results")
             return
     else:
-        model_pool_ids = list(DEFAULT_POOL)
-        model_pool = get_model_pool_short_names()
-        print(f"Model pool: DEFAULT_POOL ({len(model_pool)} models)")
+        # Use predefined pool by name
+        pool_name = args.pool_name.lower()
+        model_pool_ids = list(get_pool(pool_name))
+        model_pool = [OPENROUTER_ID_TO_MODEL_NAME.get(m, normalize_model_name(m)) for m in model_pool_ids]
+        print(f"Model pool: {pool_name.upper()} ({len(model_pool)} models)")
     
     print(f"Models: {model_pool}")
     print()
