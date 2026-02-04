@@ -2,7 +2,7 @@
 """
 SCOPE Router Inference Pipeline
 
-This script performs end-to-end inference using the SCOPE-CoT-RL-v3 model:
+This script performs end-to-end inference using the SCOPE model:
 1. Load test/anchor data (from HuggingFace or custom files)
 2. Compute query-to-anchor similarity (using compute_similarity.py)
 3. Build SCOPE-RL-data-v3 format prompts
@@ -64,7 +64,7 @@ from config.model_pools import (
 )
 
 # Default Configuration
-DEFAULT_SCOPE_MODEL = "Cooolder/SCOPE-CoT-RL-v3"
+DEFAULT_SCOPE_MODEL = "Cooolder/SCOPE"
 DEFAULT_NUM_ANCHOR_EXAMPLES = 5  # Number of anchor examples in prompt
 DEFAULT_TOP_K_SIMILARITY = 10    # Top-K similar anchors to consider
 DEFAULT_MAX_NEW_TOKENS = 1536
@@ -240,7 +240,7 @@ def build_scope_prompt(
     """
     Build SCOPE-RL-data-v3 format prompt.
     
-    This format matches the training data of Cooolder/SCOPE-CoT-RL-v3 model.
+    This format matches the training data of Cooolder/SCOPE model.
     
     Args:
         target_question: The question to predict performance for
@@ -908,13 +908,13 @@ def main():
             predictions,
             unique_questions,
             model_pool_ids,
-            method_name="SCOPE-CoT-RL-v3"
+            method_name="SCOPE"
         )
     else:
         selection_output = build_selection_format(
             predictions,
             test_data_filtered,
-            method_name="SCOPE-CoT-RL-v3"
+            method_name="SCOPE"
         )
     
     # Save output
