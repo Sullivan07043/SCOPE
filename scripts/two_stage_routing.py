@@ -55,7 +55,7 @@ from compute_similarity import (
 )
 
 # Default Configuration
-DEFAULT_TOP_K = 10           # Number of anchor questions to use
+DEFAULT_TOP_K = 6            # Number of anchor questions to use
 DEFAULT_SIMILARITY_POWER = 2.0   # Power for similarity weighting
 DEFAULT_COST_SENSITIVITY = 2.0   # Cost sensitivity parameter
 DEFAULT_STAGE1_WEIGHT = 0.3      # Weight for Stage I (anchor calibration)

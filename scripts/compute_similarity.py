@@ -325,6 +325,8 @@ def load_cached_embeddings(cache_dir: str, prefix: str):
 
 
 def main():
+    global TOP_K
+    
     parser = argparse.ArgumentParser(
         description="Compute query-to-anchor similarity for SCOPE Router"
     )
@@ -403,7 +405,6 @@ def main():
         save_embeddings(query_embeddings, query_data, args.cache_dir, "query")
     
     # Compute similarities
-    global TOP_K
     TOP_K = args.top_k
     results = compute_similarities(
         query_embeddings, anchor_embeddings,

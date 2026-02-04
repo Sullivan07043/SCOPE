@@ -64,8 +64,8 @@ from config.model_pools import (
 DEFAULT_SCOPE_MODEL = "Cooolder/SCOPE-CoT-RL-v3"
 DEFAULT_NUM_ANCHOR_EXAMPLES = 5  # Number of anchor examples in prompt
 DEFAULT_TOP_K_SIMILARITY = 10    # Top-K similar anchors to consider
-DEFAULT_MAX_NEW_TOKENS = 2048
-DEFAULT_TEMPERATURE = 0.7
+DEFAULT_MAX_NEW_TOKENS = 1536
+DEFAULT_TEMPERATURE = 0.6
 
 
 def load_custom_queries(filepath: str) -> List[Dict]:
@@ -274,7 +274,7 @@ Performance: {{len: {token_count}, correct: {correct_str}}}
 
 """
     
-    # Build the full prompt - matches SCOPE-RL-data-v3 format exactly
+    # Build the full prompt - matches original kshot_inference_cot_rl_vllm.py format
     prompt = f"""### Task
 You are a performance prediction expert. Given a target question, {num_anchor_examples} anchor questions with their performance results, and a target AI model, predict how the model will perform on the target question, specifically the output length and correctness after related reasoning analysis.
 
@@ -284,9 +284,22 @@ You are a performance prediction expert. Given a target question, {num_anchor_ex
 {examples_text}### Target Question
 {target_question}
 
+### Prediction Requirements
+1. **Analyze Anchor Patterns**: Examine how the model performed on similar questions
+2. **Assess Question Difficulty**: Consider the complexity and type of the target question
+3. **Compare with Anchors**: Find patterns between anchor performance and target characteristics
+4. **Predict Performance**: Based on your analysis, predict output length and correctness
+
 ### Output Format (STRICT)
-Analysis: [Your comprehensive analysis covering anchor patterns, target question characteristics, and reasoning.]
+Analysis: [Your comprehensive analysis covering anchor patterns, target question characteristics, and reasoning. Keep under 800 words.]
 Predicted Performance: {{len: [integer], correct: [yes/no]}}
+
+### Important Notes
+- Provide thorough analysis based on anchor patterns
+- Use anchor performance as reference points
+- Consider target question characteristics carefully
+- Do NOT add extra symbols like ** or __ around "Analysis:" or "Predicted Performance:"
+- Keep the format exactly as shown above
 
 ### Output:"""
     
@@ -296,6 +309,7 @@ Predicted Performance: {{len: [integer], correct: [yes/no]}}
 def parse_prediction(output: str) -> Dict:
     """
     Parse model output to extract predicted performance.
+    Combines aggressive cleaning with simple direct regex extraction.
     
     Args:
         output: Raw model output string
@@ -309,23 +323,62 @@ def parse_prediction(output: str) -> Dict:
         'confidence': 0.5
     }
     
-    # Try to find "Predicted Performance: {len: X, correct: yes/no}"
-    pattern = r'Predicted Performance:\s*\{?\s*len:\s*(\d+)\s*,\s*correct:\s*(yes|no)\s*\}?'
-    match = re.search(pattern, output, re.IGNORECASE)
+    # Step 1: Clean up specific markdown patterns (from original kshot code)
+    cleaned = output
+    cleaned = cleaned.replace('**Analysis**', 'Analysis:')
+    cleaned = cleaned.replace('**Analysis:**', 'Analysis:')
+    cleaned = cleaned.replace('**Analysis:', 'Analysis:')
+    cleaned = cleaned.replace('Analysis**:', 'Analysis:')
+    cleaned = cleaned.replace('__Analysis__', 'Analysis:')
+    cleaned = cleaned.replace('**Predicted Performance:**', 'Predicted Performance:')
+    cleaned = cleaned.replace('**Predicted Performance**:', 'Predicted Performance:')
+    cleaned = cleaned.replace('**Predicted Performance:', 'Predicted Performance:')
+    cleaned = cleaned.replace('Predicted Performance**:', 'Predicted Performance:')
+    cleaned = cleaned.replace('__Predicted Performance__:', 'Predicted Performance:')
+    cleaned = cleaned.replace('__Predicted Performance__', 'Predicted Performance:')
     
-    if match:
-        result['token_length'] = int(match.group(1))
-        result['correctness'] = match.group(2).lower()
+    # Step 2: Additional cleanup - remove remaining markdown
+    cleaned = re.sub(r'\*\*([^*]+)\*\*', r'\1', cleaned)  # **text** -> text
+    cleaned = re.sub(r'__([^_]+)__', r'\1', cleaned)      # __text__ -> text
+    cleaned = re.sub(r'\*([^*]+)\*', r'\1', cleaned)      # *text* -> text
+    cleaned = re.sub(r'`([^`]+)`', r'\1', cleaned)        # `text` -> text
+    
+    # Step 3: Try direct simple extraction first (most reliable)
+    len_match = re.search(r'len:\s*(\d+)', cleaned, re.IGNORECASE)
+    correct_match = re.search(r'correct:\s*(yes|no)', cleaned, re.IGNORECASE)
+    
+    if len_match and correct_match:
+        result['token_length'] = int(len_match.group(1))
+        result['correctness'] = correct_match.group(1).lower()
         result['confidence'] = 1.0
-    else:
-        # Fallback: try to find any correct: yes/no pattern
-        correct_match = re.search(r'correct:\s*(yes|no)', output, re.IGNORECASE)
+        return result
+    
+    # Step 4: If simple extraction failed, try from Predicted Performance section
+    perf_start = cleaned.find('Predicted Performance:')
+    if perf_start != -1:
+        perf_text = cleaned[perf_start:]
+        
+        # Clean brackets in performance section
+        perf_text = re.sub(r'[\[\]()]', '', perf_text)
+        
+        len_match = re.search(r'len\s*[:=]\s*(\d+)', perf_text, re.IGNORECASE)
+        correct_match = re.search(r'correct\s*[:=]\s*(yes|no)', perf_text, re.IGNORECASE)
+        
+        if len_match:
+            result['token_length'] = int(len_match.group(1))
+        if correct_match:
+            result['correctness'] = correct_match.group(1).lower()
+            result['confidence'] = 1.0 if len_match else 0.9
+    
+    # Step 5: Last resort - search entire cleaned text
+    if result['correctness'] == 'unknown':
+        correct_match = re.search(r'correct\s*[:=]\s*(yes|no)', cleaned, re.IGNORECASE)
         if correct_match:
             result['correctness'] = correct_match.group(1).lower()
             result['confidence'] = 0.8
-        
-        # Try to find any len: X pattern
-        len_match = re.search(r'len:\s*(\d+)', output, re.IGNORECASE)
+    
+    if result['token_length'] == 0:
+        len_match = re.search(r'len\s*[:=]\s*(\d+)', cleaned, re.IGNORECASE)
         if len_match:
             result['token_length'] = int(len_match.group(1))
     
@@ -357,7 +410,7 @@ def run_vllm_inference(
     Run batch inference using VLLM.
     
     Args:
-        prompts: List of prompt strings
+        prompts: List of prompt strings (raw prompts, will be wrapped in chat template)
         model_name: HuggingFace model ID
         max_tokens: Maximum tokens to generate
         temperature: Sampling temperature
@@ -376,21 +429,34 @@ def run_vllm_inference(
         model=model_name,
         tensor_parallel_size=tensor_parallel_size,
         trust_remote_code=True,
-        max_model_len=4096,
+        dtype="bfloat16",
+        max_model_len=8192,
+        gpu_memory_utilization=0.90,
+        enforce_eager=True,  # Disable CUDA Graph for better compatibility
     )
     
+    # Wrap prompts in Qwen3 chat template format
+    chat_prompts = []
+    for prompt in prompts:
+        chat_prompt = f"<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n"
+        chat_prompts.append(chat_prompt)
+    
+    # Sampling params with Qwen3 stop tokens
     sampling_params = SamplingParams(
         temperature=temperature,
         max_tokens=max_tokens,
         top_p=0.95,
+        top_k=20,
+        stop=["<|im_end|>", "<|endoftext|>"],
+        stop_token_ids=[151645, 151643],  # <|im_end|>, <|endoftext|>
     )
     
-    print(f"\nRunning inference on {len(prompts)} prompts...")
-    outputs = llm.generate(prompts, sampling_params)
+    print(f"\nRunning inference on {len(chat_prompts)} prompts...")
+    outputs = llm.generate(chat_prompts, sampling_params)
     
     results = []
     for output in outputs:
-        generated_text = output.outputs[0].text
+        generated_text = output.outputs[0].text.strip()
         results.append(generated_text)
     
     return results
@@ -803,9 +869,16 @@ def main():
     
     predictions = defaultdict(dict)
     
+    unknown_count = 0
     for i, output in enumerate(tqdm(outputs, desc="Parsing")):
         qid, model_name = prompt_metadata[i]
         parsed = parse_prediction(output)
+        
+        # Debug: print first few unknown predictions
+        if parsed['correctness'] == 'unknown' and unknown_count < 3:
+            print(f"\n[DEBUG] Unknown prediction for {qid} - {model_name}")
+            print(f"Raw output (last 500 chars): {output[-500:]}")
+            unknown_count += 1
         
         predictions[qid][model_name] = {
             'predicted': parsed
