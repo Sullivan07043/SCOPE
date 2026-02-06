@@ -282,22 +282,21 @@ Create a text file with one OpenRouter model ID per line:
 ```
 # my_models.txt
 # Lines starting with # are comments
-google/gemma-3-27b-it
-meta-llama/llama-3.3-70b-instruct
-anthropic/claude-3-haiku
-openai/gpt-4o-mini
+# Get valid model IDs from: https://openrouter.ai/models
+google/gemma-3-4b-it
+x-ai/grok-4.1-fast
+mistralai/ministral-8b-2512
 ```
 
 ### Step 2: Add Pricing for Custom Models
 
-Edit `config/pricing.json` to add pricing for your models:
+Edit `config/pricing.json` to add pricing for your models, e.g.:
 
 ```json
 {
-    "google/gemma-3-27b-it": {"input": 0.04, "output": 0.15},
-    "meta-llama/llama-3.3-70b-instruct": {"input": 0.1, "output": 0.32},
-    "anthropic/claude-3-haiku": {"input": 0.25, "output": 1.25},
-    "openai/gpt-4o-mini": {"input": 0.15, "output": 0.60}
+    "google/gemma-3-4b-it": {"input": 0.04, "output": 0.15},
+    "x-ai/grok-4.1-fast": {"input": 0.2, "output": 0.5},
+    "mistralai/ministral-8b-2512": {"input": 0.15, "output": 0.15}
 }
 ```
 
@@ -442,10 +441,10 @@ python two_stage_routing.py \
 ```
 # One OpenRouter model ID per line
 # Lines starting with # are comments
-google/gemma-3-27b-it
-meta-llama/llama-3.3-70b-instruct
-qwen/qwen3-14b
-tngtech/deepseek-r1t2-chimera
+# Get valid model IDs from: https://openrouter.ai/models
+google/gemma-3-4b-it
+x-ai/grok-4.1-fast
+mistralai/ministral-8b-2512
 ```
 
 ### Selection Output Format
