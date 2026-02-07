@@ -1,463 +1,316 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --text-color: #1f2937;
-            --bg-color: #ffffff;
-            --section-bg: #f8fafc;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Noto Sans', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header */
-        header {
-            text-align: center;
-            padding: 60px 20px 40px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        }
-        
-        h1 {
-            font-size: 2.2rem;
-            color: var(--text-color);
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
-        
-        .title-accent {
-            color: var(--primary-color);
-        }
-        
-        .authors {
-            font-size: 1.1rem;
-            color: #4b5563;
-            margin-bottom: 10px;
-        }
-        
-        .authors a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        
-        .authors a:hover {
-            text-decoration: underline;
-        }
-        
-        .affiliations {
-            font-size: 0.95rem;
-            color: #6b7280;
-            margin-bottom: 25px;
-        }
-        
-        .corresponding {
-            font-size: 0.9rem;
-            color: #6b7280;
-            margin-bottom: 25px;
-        }
-        
-        /* Buttons */
-        .buttons {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        .btn-secondary {
-            background-color: white;
-            color: var(--text-color);
-            border: 2px solid #e5e7eb;
-        }
-        
-        .btn-secondary:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        
-        /* Sections */
-        section {
-            padding: 50px 0;
-        }
-        
-        section:nth-child(even) {
-            background-color: var(--section-bg);
-        }
-        
-        h2 {
-            font-size: 1.8rem;
-            color: var(--text-color);
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        
-        h2 .emoji {
-            margin-right: 10px;
-        }
-        
-        h3 {
-            font-size: 1.3rem;
-            color: var(--text-color);
-            margin: 30px 0 15px;
-        }
-        
-        p {
-            margin-bottom: 15px;
-            text-align: justify;
-        }
-        
-        /* Abstract */
-        .abstract {
-            background-color: #f0f9ff;
-            border-left: 4px solid var(--primary-color);
-            padding: 20px 25px;
-            border-radius: 0 8px 8px 0;
-            font-size: 1rem;
-        }
-        
-        /* Figures */
-        .figure {
-            text-align: center;
-            margin: 30px 0;
-        }
-        
-        .figure img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        .figure-caption {
-            font-size: 0.9rem;
-            color: #6b7280;
-            margin-top: 12px;
-            font-style: italic;
-        }
-        
-        /* Key Results */
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-        }
-        
-        .result-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            text-align: center;
-        }
-        
-        .result-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .result-label {
-            font-size: 0.95rem;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-        
-        /* Citation */
-        .citation-box {
-            background-color: #1f2937;
-            color: #e5e7eb;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            position: relative;
-        }
-        
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #374151;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        
-        .copy-btn:hover {
-            background: #4b5563;
-        }
-        
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px;
-            background-color: #1f2937;
-            color: #9ca3af;
-            font-size: 0.9rem;
-        }
-        
-        footer a {
-            color: #60a5fa;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.6rem;
-            }
-            
-            .buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 250px;
-                justify-content: center;
-            }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="description" content="SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning">
+  <meta name="keywords" content="SCOPE, LLM Routing, Model Selection, Reinforcement Learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <style>
+    p {
+      text-align: justify;
+      font-size: 16px;
+    }
+
+    ol {
+      text-align: justify;
+    }
+
+    body {
+      font-family: 'Noto Sans', sans-serif;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      text-align: justify;
+    }
+
+    .footer .icon-link {
+      font-size: 25px;
+      color: #000;
+    }
+
+    .link-block a {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .teaser .hero-body {
+      padding-top: 0;
+      padding-bottom: 3rem;
+    }
+
+    .teaser {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .publication-title {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .publication-authors {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .publication-authors a {
+      color: hsl(204, 86%, 53%) !important;
+    }
+
+    .publication-authors a:hover {
+      text-decoration: underline;
+    }
+
+    .author-block {
+      display: inline-block;
+    }
+
+    .publication-body img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    pre {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+
+    .news-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .content ul {
+      margin-left: 1.5rem;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Models Under <span class="title-accent">SCOPE</span>: Scalable and Controllable Routing via Pre-hoc Reasoning</h1>
-            
-            <p class="authors">
-                <a href="#">Qi Cao</a><sup>1</sup>,
-                <a href="#">Shuhao Zhang</a><sup>1</sup>,
-                <a href="#">Ruizhe Zhou</a><sup>2</sup>,
-                <a href="#">Ruiyi Zhang</a><sup>1</sup>,
-                <a href="#">Peijia Qin</a><sup>1</sup>,
-                <a href="#">Pengtao Xie</a><sup>1*</sup>
-            </p>
-            
-            <p class="affiliations">
-                <sup>1</sup>UC San Diego &nbsp;&nbsp; <sup>2</sup>Independent Researcher
-            </p>
-            
-            <p class="corresponding">
-                <sup>*</sup>Corresponding author: <a href="mailto:p1xie@ucsd.edu">p1xie@ucsd.edu</a>
-            </p>
-            
-            <div class="buttons">
-                <a href="https://arxiv.org/abs/2601.22323" class="btn btn-primary" target="_blank">
-                    <i class="fas fa-file-pdf"></i> Paper
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Models Under SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="#">Qi Cao</a>,</span>
+            <span class="author-block">
+              <a href="#">Shuhao Zhang</a>,</span>
+            <span class="author-block">
+              <a href="#">Ruizhe Zhou</a>,</span>
+            <span class="author-block">
+              <a href="#">Ruiyi Zhang</a>,</span>
+            <span class="author-block">
+              <a href="#">Peijia Qin</a>,</span>
+            <span class="author-block">
+              <a href="mailto:p1xie@ucsd.edu">Pengtao Xie</a>,</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">UC San Diego, Independent Researcher</span>
+          </div>
+          <div class="is-size-6 publication-authors">
+            <span class="author-block">Corresponding to: <a href="mailto:p1xie@ucsd.edu">p1xie@ucsd.edu</a></span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2601.22323"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
                 </a>
-                <a href="https://github.com/Sullivan07043/SCOPE" class="btn btn-secondary" target="_blank">
-                    <i class="fab fa-github"></i> Code
+              </span>
+              <!-- Code Link -->
+              <span class="link-block">
+                <a href="https://github.com/Sullivan07043/SCOPE"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
                 </a>
-                <a href="https://huggingface.co/Cooolder/SCOPE" class="btn btn-secondary" target="_blank">
-                    <i class="fas fa-robot"></i> Model
+              </span>
+              <!-- Model Link -->
+              <span class="link-block">
+                <a href="https://huggingface.co/Cooolder/SCOPE"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>🤗 Model</span>
                 </a>
-                <a href="https://huggingface.co/datasets/Cooolder/SCOPE-60K-final" class="btn btn-secondary" target="_blank">
-                    <i class="fas fa-database"></i> Dataset
+              </span>
+              <!-- Dataset Link -->
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/Cooolder/SCOPE-60K-final"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>🤗 Dataset</span>
                 </a>
+              </span>
             </div>
+          </div>
         </div>
-    </header>
-    
-    <section id="abstract">
-        <div class="container">
-            <h2><span class="emoji">📄</span>Abstract</h2>
-            <div class="abstract">
-                <p>
-                    Model routing chooses which language model to use for each query. By sending easy queries to cheaper models and hard queries to stronger ones, it can significantly reduce inference cost while maintaining high accuracy. However, most existing routers treat this as a fixed choice among a small set of models, which makes them hard to adapt to new models or changing budget constraints.
-                </p>
-                <p>
-                    In this paper, we propose <strong>SCOPE</strong> (Scalable and Controllable Outcome Performance Estimator), a routing framework that goes beyond model selection by predicting their cost and performance. Trained with reinforcement learning, SCOPE makes reasoning-based predictions by retrieving how models behave on similar problems, rather than relying on fixed model names, enabling it to work with new, unseen models. Moreover, by explicitly predicting how accurate and how expensive a model will be, it turns routing into a dynamic decision problem, allowing users to easily control the trade-off between accuracy and cost.
-                </p>
-                <p>
-                    Experiments show that SCOPE is more than just a cost-saving tool. It flexibly adapts to user needs: it can <strong>boost accuracy by up to 25.7%</strong> when performance is the priority, or <strong>cut costs by up to 95.1%</strong> when efficiency matters most.
-                </p>
-            </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- News -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">🔔 News</h2>
+        <div class="content">
+          <p class="news-item"><strong>🔥[2026-01-29] Our paper <a href="https://arxiv.org/abs/2601.22323">SCOPE</a>, <a href="https://github.com/Sullivan07043/SCOPE">Code</a> and <a href="https://huggingface.co/Cooolder/SCOPE">Models</a> are out 🚀.</strong></p>
         </div>
-    </section>
-    
-    <section id="motivation">
-        <div class="container">
-            <h2><span class="emoji">💡</span>Why SCOPE?</h2>
-            
-            <p>
-                Traditional routers memorize which model to use for each type of question. This approach has two major limitations: (1) they cannot generalize to new, unseen models, and (2) they cannot adapt to different budget constraints without retraining.
-            </p>
-            
-            <p>
-                SCOPE takes a fundamentally different approach. Instead of memorizing model assignments, it <strong>reasons about model behaviors</strong> by analyzing how models have performed on similar questions in the past. This enables SCOPE to:
-            </p>
-            
-            <ul style="margin-left: 20px; margin-bottom: 20px;">
-                <li>Work with any model, including those never seen during training</li>
-                <li>Adapt to any budget constraint at inference time</li>
-                <li>Provide controllable trade-offs between accuracy and cost</li>
-            </ul>
-            
-            <div class="figure">
-                <img src="static/images/effectiveness_comparison.png" alt="SCOPE vs Individual Models">
-                <p class="figure-caption">
-                    <strong>Left:</strong> SCOPE achieves a Pareto frontier that dominates individual model performance, offering better accuracy-cost trade-offs at any budget level.
-                    <strong>Right:</strong> Comparison showing the importance of Chain-of-Thought reasoning in SCOPE's predictions.
-                </p>
-            </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Introduction -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Introduction</h2>
+        <div class="content">
+          <p>
+            Model routing chooses which language model to use for each query. By sending easy queries to cheaper models and hard queries to stronger ones, it can significantly reduce inference cost while maintaining high accuracy. However, most existing routers treat this as a fixed choice among a small set of models, which makes them hard to adapt to new models or changing budget constraints.
+          </p>
+          <p>
+            In this paper, we propose <strong>SCOPE</strong> (Scalable and Controllable Outcome Performance Estimator), a routing framework that goes beyond model selection by predicting their cost and performance. Trained with reinforcement learning, SCOPE makes reasoning-based predictions by retrieving how models behave on similar problems, rather than relying on fixed model names, enabling it to work with new, unseen models. Moreover, by explicitly predicting how accurate and how expensive a model will be, it turns routing into a dynamic decision problem, allowing users to easily control the trade-off between accuracy and cost.
+          </p>
         </div>
-    </section>
-    
-    <section id="results">
-        <div class="container">
-            <h2><span class="emoji">🏆</span>Key Results</h2>
-            
-            <div class="results-grid">
-                <div class="result-card">
-                    <div class="result-number">+25.7%</div>
-                    <div class="result-label">Accuracy Improvement<br>(when prioritizing performance)</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-number">-95.1%</div>
-                    <div class="result-label">Cost Reduction<br>(when prioritizing efficiency)</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-number">13+</div>
-                    <div class="result-label">Models Supported<br>(including OOD models)</div>
-                </div>
-            </div>
-            
-            <h3>Token Savings</h3>
-            <p>
-                Compared to test-time-scaling (TTS) approaches that try all models, SCOPE achieves significant token savings while maintaining comparable accuracy.
-            </p>
-            
-            <div class="figure">
-                <img src="static/images/token_savings.png" alt="Token Savings">
-                <p class="figure-caption">
-                    SCOPE significantly reduces token usage compared to TTS methods, with savings increasing as the model pool size grows.
-                </p>
-            </div>
-            
-            <h3>Ablation Study</h3>
-            <div class="figure">
-                <img src="static/images/ablation.png" alt="Ablation Study">
-                <p class="figure-caption">
-                    <strong>Left:</strong> SCOPE outperforms baseline routing strategies including random selection and highest-cost-first.
-                    <strong>Right:</strong> Effect of stage-1 weight parameter on routing performance.
-                </p>
-            </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">SCOPE</h2>
+
+    <!-- Overview -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h3 class="title is-4">Overview</h3>
+        <div class="content">
+          <p>
+            Traditional routers memorize which model to use for each type of question. SCOPE takes a fundamentally different approach: instead of memorizing model assignments, it <strong>reasons about model behaviors</strong> by analyzing how models have performed on similar questions in the past. This enables SCOPE to:
+          </p>
+          <ul>
+            <li>Work with any model, including those never seen during training</li>
+            <li>Adapt to any budget constraint at inference time</li>
+            <li>Provide controllable trade-offs between accuracy and cost</li>
+          </ul>
+          <p>
+            SCOPE operates in three stages: (1) <strong>Fingerprint Construction</strong> - retrieving similar questions from an anchor bank to construct a model fingerprint; (2) <strong>Performance Prediction</strong> - using chain-of-thought reasoning to predict correctness and token length; (3) <strong>Decision & Calibration</strong> - combining predictions with anchor-based calibration to select the optimal model.
+          </p>
         </div>
-    </section>
-    
-    <section id="method">
-        <div class="container">
-            <h2><span class="emoji">⚙️</span>How SCOPE Works</h2>
-            
-            <p>
-                SCOPE operates in three stages:
-            </p>
-            
-            <ol style="margin-left: 20px; margin-bottom: 20px;">
-                <li><strong>Fingerprint Construction:</strong> For each target question, SCOPE retrieves similar questions from an anchor bank and constructs a "model fingerprint" showing how each model performed on similar problems.</li>
-                <li><strong>Performance Prediction:</strong> Using chain-of-thought reasoning, SCOPE predicts both the correctness and token length for each candidate model.</li>
-                <li><strong>Decision & Calibration:</strong> A utility function combines predictions with anchor-based calibration to select the optimal model under the given budget constraint.</li>
-            </ol>
-            
-            <p>
-                The model is trained using GRPO (Group Relative Policy Optimization) on the SCOPE-60K dataset, which contains 60,000+ question-model pairs with synthetic reasoning rationales.
-            </p>
+      </div>
+    </div>
+
+    <!-- Main Results -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h3 class="title is-4">Main Results</h3>
+        <div class="content">
+          <p>
+            Experiments show that SCOPE is more than just a cost-saving tool. It flexibly adapts to user needs: it can <strong>boost accuracy by up to 25.7%</strong> when performance is the priority, or <strong>cut costs by up to 95.1%</strong> when efficiency matters most.
+          </p>
+          <img src="static/images/effectiveness_comparison.png" alt="SCOPE vs Individual Models">
+          <p style="text-align: center; font-size: 14px; color: #666; margin-top: 10px;">
+            <strong>Left:</strong> SCOPE achieves a Pareto frontier that dominates individual model performance.
+            <strong>Right:</strong> Comparison showing the importance of Chain-of-Thought reasoning.
+          </p>
         </div>
-    </section>
-    
-    <section id="citation">
-        <div class="container">
-            <h2><span class="emoji">📚</span>Citation</h2>
-            <p>If you find our work useful, please cite our paper:</p>
-            
-            <div class="citation-box">
-                <button class="copy-btn" onclick="copyBibtex()">
-                    <i class="fas fa-copy"></i> Copy
-                </button>
-<pre>@article{cao2026scope,
+      </div>
+    </div>
+
+    <!-- Token Savings -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h3 class="title is-4">Token Savings</h3>
+        <div class="content">
+          <p>
+            Compared to test-time-scaling (TTS) approaches that try all models, SCOPE achieves significant token savings while maintaining comparable accuracy. The savings increase as the model pool size grows.
+          </p>
+          <img src="static/images/token_savings.png" alt="Token Savings">
+        </div>
+      </div>
+    </div>
+
+    <!-- Ablation -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h3 class="title is-4">Ablation Study</h3>
+        <div class="content">
+          <p>
+            We conduct extensive ablation studies to validate our design choices. SCOPE outperforms baseline routing strategies including random selection and highest-cost-first approaches.
+          </p>
+          <img src="static/images/ablation.png" alt="Ablation Study">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Explore More</h2>
+        <div class="content">
+          <p>
+            Explore more about details of our approach, the training pipeline, and experimental analysis in <a href="https://arxiv.org/abs/2601.22323">our paper</a>!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Reference</h2>
+    <p>If you find our work useful, please give us a cite:</p>
+    <pre><code>@article{cao2026scope,
     title={Models Under SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning},
     author={Cao, Qi and Zhang, Shuhao and Zhou, Ruizhe and Zhang, Ruiyi and Qin, Peijia and Xie, Pengtao},
     journal={arXiv preprint arXiv:2601.22323},
     year={2026}
-}</pre>
-            </div>
-        </div>
-    </section>
-    
-    <footer>
-        <p>
-            &copy; 2026 SCOPE Team. This website is licensed under a 
-            <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
-        </p>
-    </footer>
-    
-    <script>
-        function copyBibtex() {
-            const bibtex = `@article{cao2026scope,
-    title={Models Under SCOPE: Scalable and Controllable Routing via Pre-hoc Reasoning},
-    author={Cao, Qi and Zhang, Shuhao and Zhou, Ruizhe and Zhang, Ruiyi and Qin, Peijia and Xie, Pengtao},
-    journal={arXiv preprint arXiv:2601.22323},
-    year={2026}
-}`;
-            navigator.clipboard.writeText(bibtex).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
-                }, 2000);
-            });
-        }
-    </script>
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+      </p>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
